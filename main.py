@@ -3,7 +3,9 @@ from fastapi import FastAPI, UploadFile, File
 from google.cloud import speech
 import io
 import wave
-# from models import model_func
+# from model1 import model_func
+# from kobert_model import model_func
+# from textrank_model import model_func
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/user1/sherlockvoice_server/app/keyofgstt.json"
 
@@ -22,6 +24,9 @@ async def create_upload_file(file: UploadFile = File(...)):
     client = speech.SpeechClient()
     
     content = await file.read()
+    
+    # 합성음성 판단
+    # is_synthetic = model1.predict(content)
     
     sample_rate_hertz = get_sample_rate(io.BytesIO(content))
     sample_channaels = get_sample_channaels(io.BytesIO(content))
@@ -56,14 +61,16 @@ async def create_upload_file(file: UploadFile = File(...)):
     else:
         print("Not able to transcribe the audio file")
 
+    # if is_synthetic:
+    #     # 합성음성이면 textrank_model
+    #     keywords, summary = textrank_model.predict(text)
+    # else:
+    #     # 합성음성이 아니면 kobert_model
+    #     is_phishing = kobert_model.predict(text)
+    #     if is_phishing:
+    #         # 보이스피싱이면 textrank_model
+    #         keywords, summary = textrank_model.predict(text)
+    #     else:
+    #         return {"message": "This is not a phishing voice."}
 
-'''
-# Send the result of transcribe to the AI model
-def model_func(file):
-    return "This is the result from the model"
-
-@app.post("/final result/")
-async def final_result():
-    result = model_func(file)
-    return {"result": result}
-'''
+    # return {"keywords": keywords, "summary": summary}
